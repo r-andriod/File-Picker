@@ -15,17 +15,17 @@ import com.jxyedu.lib.filepicker.utils.PermissionUtils;
 
 import java.util.Arrays;
 
+
 public class MainActivity extends AppCompatActivity {
 
     private Context mContext;
     // 相机权限、多个权限
     private final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
+
     private final String[] PERMISSIONS = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.READ_CALENDAR,
-            Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            //READ_CALENDAR
     };
 
     // 打开相机请求Code，多个权限请求Code
@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 requestMorePermissions();
+                //toCamera();
             }
         });
 
@@ -56,17 +57,8 @@ public class MainActivity extends AppCompatActivity {
                 .pickPhoto(MainActivity.this);
     }
 
-    // 普通申请一个权限
-    private void requestPermission() {
-        PermissionUtils.checkAndRequestPermission(mContext, PERMISSION_CAMERA, REQUEST_CODE_CAMERA,
-                new PermissionUtils.PermissionRequestSuccessCallBack() {
-                    @Override
-                    public void onHasPermission() {
-                        // 权限已被授予
-                        toCamera();
-                    }
-                });
-    }
+
+
 
     // 普通申请多个权限
     private void requestMorePermissions() {
@@ -82,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         switch (requestCode) {
             case REQUEST_CODE_CAMERA:
                 if (PermissionUtils.isPermissionRequestSuccess(grantResults)) {
@@ -92,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case REQUEST_CODE_PERMISSIONS:
+
+                // 权限被拒绝
                 PermissionUtils.onRequestMorePermissionsResult(mContext, PERMISSIONS, new PermissionUtils.PermissionCheckCallBack() {
                     @Override
                     public void onHasPermission() {
@@ -110,9 +106,10 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
         }
+
     }
+
 
     /**
      * 显示前往应用设置Dialog
@@ -129,6 +126,5 @@ public class MainActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("取消", null).show();
     }
-
 
 }
