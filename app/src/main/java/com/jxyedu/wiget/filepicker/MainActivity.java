@@ -58,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     // 普通申请多个权限
     private void requestMorePermissions() {
         PermissionUtils.checkAndRequestMorePermissions(mContext, PERMISSIONS, REQUEST_CODE_PERMISSIONS,
