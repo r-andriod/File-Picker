@@ -8,5 +8,5 @@ public interface FilePickerFragmentListener {
     /**
      * fragment 选中回调给 activity
      */
-    void onItemSelected();
+    void onItemSelectedCompletedAndBack();
 }

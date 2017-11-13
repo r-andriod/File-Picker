@@ -31,12 +31,13 @@ import com.jxyedu.lib.filepicker.utils.Utils;
 import com.jxyedu.lib.filepicker.view.DirectoryPopUpWindow;
 import com.jxyedu.lib.filepicker.view.GridSpacingItemDecoration;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ImagePickerFragment extends BaseFragment implements BaseFileItemClickListener<Photo>,View.OnClickListener {
+public class ImagePickerFragment extends BaseFragment implements BaseFileItemClickListener<Photo>, View.OnClickListener {
 
     public static final String TAG = ImagePickerFragment.class.getSimpleName();
 
@@ -53,43 +54,60 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
     private ImageDirectoryAdapter mImageDirectoryAdapter;    //图片文件夹的适配器
     private DirectoryPopUpWindow mDirectoryPopUpWindow;  //ImageSet的PopupWindow
 
-    private FilePickerFragmentListener mListener;
+    //private FilePickerFragmentListener mListener;
+
+    private ArrayList<Photo> mCurrentDirPhotos;
+
+
+    public PhotoPreviewFragmentListener mPhotoPreviewListener;
+
+    public interface PhotoPreviewFragmentListener {
+        void onItemSelectedCompletedAndBack();
+        void onAllImagePreview(String path);
+        void onSelectImagePreview(String path);
+    }
 
 
     /**
      * 保存 fragment data 到 Bundle
+     *
      * @param outState
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //outState.putString("data", mPhotoDirectories);
+        //outState.putSerializable("data", mCurrentDirPhotos);
     }
 
     /**
      * 获取保存在 fragment 中的 Bundle 值
+     *
      * @param savedInstanceState
      */
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //mPhotoDirectories = savedInstanceState.getString("data");
+        //mCurrentDirPhotos = (ArrayList<Photo>) savedInstanceState.getSerializable("data");
     }
 
 
     /**
      * 初始化 mListener 回调
+     *
      * @param context
      */
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof FilePickerFragmentListener) {
-            mListener = (FilePickerFragmentListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement FilePickerFragmentListener");
+        Log.d(TAG, "------ onAttach ");
+        try {
+            mPhotoPreviewListener = (PhotoPreviewFragmentListener) context;
+            Log.d(TAG,"--PhotoPreviewFragmentListener");
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().getClass().getName()
+                    + " must implements interface MyListener");
         }
+
     }
 
     /**
@@ -98,7 +116,8 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        //mListener = null;
+        mPhotoPreviewListener = null;
     }
 
 
@@ -110,6 +129,7 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
      * 接收确切的参数，
      * 返回一个 Fragment 实例，
      * 避免了在创建 Fragment 的时候无法在类外部知道所需参数的问题
+     *
      * @return
      */
     public static ImagePickerFragment newInstance() {
@@ -119,7 +139,7 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
 //        fragment.setArguments(args);
 //        return fragment;
         ImagePickerFragment imagePickerFragment = new ImagePickerFragment();
-        return  imagePickerFragment;
+        return imagePickerFragment;
     }
 
 
@@ -136,7 +156,7 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
         initView(view);
     }
 
-    private void initView(View view){
+    private void initView(View view) {
         mllDir = view.findViewById(R.id.ll_dir);
         mllDir.setOnClickListener(this);
 
@@ -153,6 +173,7 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
         mBtnOk.setOnClickListener(this);
 
         mBtnPre = view.findViewById(R.id.btn_preview);
+        mBtnPre.setOnClickListener(this);
 
         mImageDirectoryAdapter = new ImageDirectoryAdapter(getActivity(), null);
 
@@ -185,7 +206,8 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
         if (id == R.id.btn_ok) {
             //需要回传到 activity 并
             //setResult(ImagePicker.RESULT_CODE_ITEMS, intent);
-            mListener.onItemSelected();
+            //mListener.onItemSelectedCompletedAndBack();
+            mPhotoPreviewListener.onItemSelectedCompletedAndBack();
         } else if (id == R.id.ll_dir) {
             if (mPhotoDirectories == null) {
                 Log.i(this.getClass().getSimpleName(), "您的手机没有图片");
@@ -204,12 +226,8 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
                 mDirectoryPopUpWindow.setSelection(index);
             }
         } else if (id == R.id.btn_preview) {
-//            Intent intent = new Intent(ImageGridActivity.this, ImagePreviewActivity.class);
-//            intent.putExtra(ImagePicker.EXTRA_SELECTED_IMAGE_POSITION, 0);
-//            intent.putExtra(ImagePicker.EXTRA_IMAGE_ITEMS, imagePicker.getSelectedImages());
-//            intent.putExtra(ImagePreviewActivity.ISORIGIN, isOrigin);
-//            intent.putExtra(ImagePicker.EXTRA_FROM_ITEMS, true);
-//            startActivityForResult(intent, ImagePicker.REQUEST_CODE_PREVIEW);
+            Log.d(TAG, " 预览 点击后的事件！");
+            mPhotoPreviewListener.onSelectImagePreview(null);
         } else if (id == R.id.btn_back) {
             //点击返回按钮
             //finish();
@@ -240,13 +258,16 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
         Log.d("Tag", "path size:" + paths.size());
         mPhotoDirectories = paths;
         mImageDirectoryAdapter.refreshData(mPhotoDirectories);
-        mRecyclerAdapter = new ImageRecyclerAdapter(getActivity(), paths.get(0).photos,
+        if (null == mCurrentDirPhotos) {
+            mCurrentDirPhotos = paths.get(0).photos;
+        }
+        mRecyclerAdapter = new ImageRecyclerAdapter(getActivity(), mCurrentDirPhotos,
                 FPickerManager.INSTANCE.getSelectedPhotos(), this);
         mRecyclerView.setAdapter(mRecyclerAdapter);
     }
 
 
-        /**
+    /**
      * 选中图片回调
      *
      * @param view
@@ -282,7 +303,7 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
     }
 
     /**
-     * 大图查看
+     * 大图点击后回调 -> 预览
      *
      * @param view
      * @param image
@@ -291,26 +312,18 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
     @Override
     public void onItemClick(View view, Photo image, int position) {
         Log.d(this.getClass().getSimpleName(), image.name + " | " + image.path);
-        //根据是否有相机按钮确定位置
-        //position = imagePicker.isShowCamera() ? position - 1 : position;
+        //previewPhotoBack(image.path);
+        mPhotoPreviewListener.onAllImagePreview(image.path);
+    }
 
-        //Intent intent = new Intent(FPickerActivity.this, ImagePreviewActivity.class);
-        //intent.putExtra(ImagePicker.EXTRA_SELECTED_IMAGE_POSITION, position);
 
-        /**
-         * 2017-03-20
-         *
-         * 依然采用弱引用进行解决，采用单例加锁方式处理
-         */
-
-        // 据说这样会导致大量图片的时候崩溃
-//            intent.putExtra(ImagePicker.EXTRA_IMAGE_ITEMS, imagePicker.getCurrentImageFolderItems());
-
-        // 但采用弱引用会导致预览弱引用直接返回空指针
-        //DataHolder.getInstance().save(DataHolder.DH_CURRENT_IMAGE_FOLDER_ITEMS, imagePicker.getCurrentImageFolderItems());
-        //intent.putExtra(ImagePreviewActivity.ISORIGIN, isOrigin);
-        //startActivityForResult(intent, ImagePicker.REQUEST_CODE_PREVIEW);  //如果是多选，点击图片进入预览界面
-
+    private void previewPhotoBack(String path) {
+        // TODO: 2017/11/13 发布时注释 null 判断
+        if (null == mPhotoPreviewListener)
+            throw new IllegalArgumentException(" PhotoPreviewListener 不能为 null");
+        if (null != mPhotoPreviewListener) {
+            mPhotoPreviewListener.onSelectImagePreview(path);
+        }
     }
 
 

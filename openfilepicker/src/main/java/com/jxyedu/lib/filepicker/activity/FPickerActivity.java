@@ -10,12 +10,14 @@ import com.jxyedu.lib.filepicker.FPickerManager;
 import com.jxyedu.lib.filepicker.R;
 import com.jxyedu.lib.filepicker.fragment.FilePickerFragmentListener;
 import com.jxyedu.lib.filepicker.fragment.ImagePickerFragment;
+import com.jxyedu.lib.filepicker.fragment.ResultImagePreviewFragment;
 import com.jxyedu.lib.filepicker.utils.FragmentUtil;
 
 import java.util.ArrayList;
 
 public class FPickerActivity extends AppCompatActivity implements
-        FilePickerFragmentListener {
+        FilePickerFragmentListener,
+        ImagePickerFragment.PhotoPreviewFragmentListener {
 
     public static final String TAG = FPickerActivity.class.getSimpleName();
 
@@ -88,9 +90,25 @@ public class FPickerActivity extends AppCompatActivity implements
      * 文件选择后确定的回调
      */
     @Override
-    public void onItemSelected() {
+    public void onItemSelectedCompletedAndBack() {
         ArrayList<String> paths = new ArrayList<>();
         paths = FPickerManager.INSTANCE.getSelectedPhotos();
         returnData(paths);
     }
+
+    @Override
+    public void onAllImagePreview(String path) {
+        Log.d(TAG, "onAllImagePreview path -> " + path);
+        //ImagePreviewFragment imagePreviewFragment = ImagePreviewFragment.newInstance(path);
+        //FragmentUtil.addFragment(this, R.id.container, imagePreviewFragment);
+    }
+
+    @Override
+    public void onSelectImagePreview(String path) {
+        Log.d(TAG, "onSelectImagePreview path -> " + path);
+        ResultImagePreviewFragment resultImagePreviewFragment = ResultImagePreviewFragment.newInstance(path);
+        FragmentUtil.replaceFragment(this, R.id.container, resultImagePreviewFragment);
+    }
+
+
 }

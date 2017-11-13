@@ -47,4 +47,8 @@ public class FPickerConstants {
     public final static String DOC = "DOC";
     public final static String XLS = "XLS";
     public final static String TXT = "TXT";
+
+
+
+    public final static String PHOTO_PREVIEW_PATH_KEY = "preview_key";
 }
