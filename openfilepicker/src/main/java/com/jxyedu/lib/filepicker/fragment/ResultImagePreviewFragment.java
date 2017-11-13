@@ -6,7 +6,6 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -32,7 +31,6 @@ import static com.jxyedu.lib.filepicker.FPickerConstants.PHOTO_PREVIEW_PATH_KEY;
 
 /**
  * 预览已经选择的图片，并可以删除
- * A simple {@link Fragment} subclass.
  */
 public class ResultImagePreviewFragment extends BaseFragment implements View.OnClickListener {
 
