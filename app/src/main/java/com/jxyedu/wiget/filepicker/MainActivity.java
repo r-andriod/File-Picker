@@ -1,18 +1,23 @@
 package com.jxyedu.wiget.filepicker;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.jxyedu.lib.filepicker.FPickerBuilder;
+import com.jxyedu.lib.filepicker.FPickerConstants;
 import com.jxyedu.lib.filepicker.utils.PermissionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 
@@ -46,6 +51,22 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK && data != null) {
+            ArrayList<String> photoPaths = new ArrayList<>();
+            photoPaths.addAll(data.getStringArrayListExtra(FPickerConstants.KEY_SELECTED_MEDIA));
+            Log.d("--"," 接收到的 data size:" + photoPaths.size() );
+        }
+
+
+//        switch (requestCode){
+//            Log.d("--"," data:" + )
+//        }
     }
 
     /**

@@ -2,7 +2,7 @@ package com.jxyedu.lib.filepicker.fragment;
 
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -53,6 +53,8 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
     private ImageDirectoryAdapter mImageDirectoryAdapter;    //图片文件夹的适配器
     private DirectoryPopUpWindow mDirectoryPopUpWindow;  //ImageSet的PopupWindow
 
+    private FilePickerFragmentListener mListener;
+
 
     /**
      * 保存 fragment data 到 Bundle
@@ -72,6 +74,31 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //mPhotoDirectories = savedInstanceState.getString("data");
+    }
+
+
+    /**
+     * 初始化 mListener 回调
+     * @param context
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof FilePickerFragmentListener) {
+            mListener = (FilePickerFragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement FilePickerFragmentListener");
+        }
+    }
+
+    /**
+     * 注销回调
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
 
@@ -123,6 +150,8 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
 
         mFooterBar = view.findViewById(R.id.footer_bar);
         mBtnOk = view.findViewById(R.id.btn_ok);
+        mBtnOk.setOnClickListener(this);
+
         mBtnPre = view.findViewById(R.id.btn_preview);
 
         mImageDirectoryAdapter = new ImageDirectoryAdapter(getActivity(), null);
@@ -154,10 +183,9 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
     public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.btn_ok) {
-            Intent intent = new Intent();
-            //intent.putExtra(ImagePicker.EXTRA_RESULT_ITEMS, imagePicker.getSelectedImages());
-            // setResult(ImagePicker.RESULT_CODE_ITEMS, intent);  //多选不允许裁剪裁剪，返回数据
-            //finish();
+            //需要回传到 activity 并
+            //setResult(ImagePicker.RESULT_CODE_ITEMS, intent);
+            mListener.onItemSelected();
         } else if (id == R.id.ll_dir) {
             if (mPhotoDirectories == null) {
                 Log.i(this.getClass().getSimpleName(), "您的手机没有图片");
