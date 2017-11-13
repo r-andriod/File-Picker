@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,7 @@ import com.jxyedu.lib.filepicker.view.ViewPagerViewPhoto;
 
 import java.util.ArrayList;
 
-import static com.jxyedu.lib.filepicker.FPickerConstants.PHOTO_PREVIEW_PATH_KEY;
+import static com.jxyedu.lib.filepicker.FPickerConstants.EXTRA_PHOTO_PREVIEW_PATH;
 
 /**
  * 预览已经选择的图片，并可以删除
@@ -50,7 +51,7 @@ public class ResultImagePreviewFragment extends BaseFragment implements View.OnC
 
     public static ResultImagePreviewFragment newInstance(String path) {
         Bundle args = new Bundle();
-        args.putString(PHOTO_PREVIEW_PATH_KEY, path);
+        args.putString(EXTRA_PHOTO_PREVIEW_PATH, path);
         ResultImagePreviewFragment resultImagePreviewFragment = new ResultImagePreviewFragment();
         resultImagePreviewFragment.setArguments(args);
         return resultImagePreviewFragment;
@@ -174,6 +175,21 @@ public class ResultImagePreviewFragment extends BaseFragment implements View.OnC
                 mTitleCount.setText(getString(R.string.fp_preview_image_count, mCurrentPosition + 1, FPickerManager.INSTANCE.getCurrentCount()));
             }
         });
+
+        //回退键
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    popBackStack();
+                    return true;
+                }
+                return false;
+            }
+        });
+
     }
 
     @Override

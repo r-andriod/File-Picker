@@ -10,6 +10,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -187,6 +188,21 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
 
 
         mImageDirectoryAdapter = new ImageDirectoryAdapter(getActivity(), null);
+
+        //回退键
+        view.setFocusable(true);
+        view.setFocusableInTouchMode(true);
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK) {
+                    //不一定是要触发返回栈，可以做一些其他的事情
+                    getActivity().onBackPressed();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         getDataFromImage();
     }

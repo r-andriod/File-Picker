@@ -18,9 +18,10 @@ import java.util.ArrayList;
 public class FPickerActivity extends AppCompatActivity implements
         FilePickerFragmentListener,
         ImagePickerFragment.PhotoPreviewFragmentListener,
-        ResultImagePreviewFragment.PhotoPreviewAndResultFragmentListener{
+        ResultImagePreviewFragment.PhotoPreviewAndResultFragmentListener {
 
     public static final String TAG = FPickerActivity.class.getSimpleName();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +30,12 @@ public class FPickerActivity extends AppCompatActivity implements
         Log.d(TAG, " fp activity onCreate: ------>");
 
 
-        ArrayList<String> lists = (ArrayList<String>) getIntent().getSerializableExtra(FPickerConstants.PHOTO_PREVIEW_PATH_KEY);
-        if (null != lists && lists.size()>0) {
-            Log.d(TAG, "onCreate: list size:"+lists.size());
+        if (isPreviewExtra()){
+            openPreviewPhotoFragment("");
+        }else {
+            //fragment
+            openSpecificFragment(savedInstanceState);
         }
-        //fragment 
-        openSpecificFragment(savedInstanceState);
     }
 
     /**
@@ -66,10 +67,8 @@ public class FPickerActivity extends AppCompatActivity implements
     }
 
 
-
     /**
      * 返回选择文件数据结果给需要的页面
-     *
      */
     private void returnData() {
         ArrayList<String> paths = new ArrayList<>();
@@ -100,9 +99,9 @@ public class FPickerActivity extends AppCompatActivity implements
     @Override
     public void onSelectImagePreview(String path) {
         Log.d(TAG, "onSelectImagePreview path -> " + path);
-        ResultImagePreviewFragment resultImagePreviewFragment = ResultImagePreviewFragment.newInstance(path);
-        FragmentUtil.replaceFragment(this, R.id.container, resultImagePreviewFragment);
+        openPreviewPhotoFragment(path);
     }
+
 
     @Override
     public void onBackExit() {
@@ -117,4 +116,23 @@ public class FPickerActivity extends AppCompatActivity implements
     }
 
 
+    /**
+     *
+     */
+    private boolean isPreviewExtra() {
+        ArrayList<String> lists = (ArrayList<String>) getIntent()
+                .getSerializableExtra(FPickerConstants.EXTRA_PHOTO_PREVIEW_PATH);
+        if (null != lists && lists.size() > 0) {
+            Log.d(TAG, "onCreate: list size:" + lists.size());
+            FPickerManager.INSTANCE.add(lists,FPickerConstants.FILE_TYPE_MEDIA);
+            return true;
+        }
+        return false;
+    }
+
+
+    private void openPreviewPhotoFragment(String path) {
+        ResultImagePreviewFragment resultImagePreviewFragment = ResultImagePreviewFragment.newInstance(path);
+        FragmentUtil.replaceFragment(this, R.id.container, resultImagePreviewFragment);
+    }
 }

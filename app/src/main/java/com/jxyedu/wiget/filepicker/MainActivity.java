@@ -1,7 +1,6 @@
 package com.jxyedu.wiget.filepicker;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -61,11 +60,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult: " + resultCode + " requestCode:" + requestCode);
-        if (resultCode == Activity.RESULT_OK && data != null) {
+        if (requestCode == FPickerConstants.REQUEST_CODE_PHOTO && data != null) {
             photoPaths = new ArrayList<>();
             photoPaths.addAll(data.getStringArrayListExtra(FPickerConstants.KEY_SELECTED_MEDIA));
             Log.d("--", " 接收到的 data size:" + photoPaths.size());
         }
+
     }
 
     /**
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         FPickerBuilder.getInstance()
                 .setMaxCount(5)
-                .setPhotoOptions(FPickerConstants.PHOTO_PREVIEW_PATH_KEY,photoPaths)
+                .setPhotoOptions(FPickerConstants.EXTRA_PHOTO_PREVIEW_PATH,photoPaths)
                 .pickPhoto(this);
 
 

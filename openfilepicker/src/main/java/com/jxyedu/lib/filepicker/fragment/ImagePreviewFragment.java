@@ -17,7 +17,7 @@ import com.jxyedu.lib.filepicker.utils.Utils;
 import com.jxyedu.lib.filepicker.view.SuperCheckBox;
 import com.jxyedu.lib.filepicker.view.ViewPagerViewPhoto;
 
-import static com.jxyedu.lib.filepicker.FPickerConstants.PHOTO_PREVIEW_PATH_KEY;
+import static com.jxyedu.lib.filepicker.FPickerConstants.EXTRA_PHOTO_PREVIEW_PATH;
 
 /**
  * 一个对所有图片进行查看的 view
@@ -46,7 +46,7 @@ public class ImagePreviewFragment extends BaseFragment {
     }
     public static ImagePreviewFragment newInstance(String path) {
         Bundle args = new Bundle();
-        args.putString(PHOTO_PREVIEW_PATH_KEY,path);
+        args.putString(EXTRA_PHOTO_PREVIEW_PATH,path);
         ImagePreviewFragment imagePreviewFragment = new ImagePreviewFragment();
         imagePreviewFragment.setArguments(args);
         return  imagePreviewFragment;

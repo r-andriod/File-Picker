@@ -50,5 +50,6 @@ public class FPickerConstants {
 
 
 
-    public final static String PHOTO_PREVIEW_PATH_KEY = "preview_key";
+    public final static String EXTRA_PHOTO_PREVIEW_PATH = "preview_path";
+    public final static String EXTRA_TYPE_IS_PHOTO_PREVIEW = "is_preview_photo";
 }
