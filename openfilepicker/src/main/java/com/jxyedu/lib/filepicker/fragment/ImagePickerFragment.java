@@ -62,8 +62,12 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
 
     public interface PhotoPreviewFragmentListener {
         void onItemSelectedCompletedAndBack();
+
         void onAllImagePreview(String path);
+
         void onSelectImagePreview(String path);
+        // 返回事件
+        void onBackExit();
     }
 
 
@@ -101,7 +105,7 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
         Log.d(TAG, "------ onAttach ");
         try {
             mPhotoPreviewListener = (PhotoPreviewFragmentListener) context;
-            Log.d(TAG,"--PhotoPreviewFragmentListener");
+            Log.d(TAG, "--PhotoPreviewFragmentListener");
         } catch (ClassCastException e) {
             throw new ClassCastException(getActivity().getClass().getName()
                     + " must implements interface MyListener");
@@ -174,6 +178,14 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
         mBtnPre = view.findViewById(R.id.btn_preview);
         mBtnPre.setOnClickListener(this);
 
+        mBtnOk.setEnabled(false);
+        mBtnPre.setEnabled(false);
+
+        mBtnOk.setText(getString(R.string.fp_select_complete, FPickerManager.INSTANCE.getCurrentCount(), FPickerManager.INSTANCE.getMaxCount()));
+
+        view.findViewById(R.id.btn_back).setOnClickListener(this);
+
+
         mImageDirectoryAdapter = new ImageDirectoryAdapter(getActivity(), null);
 
         getDataFromImage();
@@ -181,9 +193,6 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
 
     private void getDataFromImage() {
         final Bundle mediaStoreArgs = new Bundle();
-        //mediaStoreArgs.putBoolean(FPickerConstants.EXTRA_SHOW_GIF, PickerManager.getInstance().isShowGif());
-        //mediaStoreArgs.putInt(FPickerConstants.EXTRA_FILE_TYPE, fileType);
-
         FileDataRepository.getPhotoDirs(getActivity(), mediaStoreArgs, new FileResultCallback<PhotoDirectory>() {
             @Override
             public void onResultCallback(List<PhotoDirectory> paths) {
@@ -230,6 +239,7 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
         } else if (id == R.id.btn_back) {
             //点击返回按钮
             //finish();
+            mPhotoPreviewListener.onBackExit();
         }
     }
 
@@ -317,12 +327,7 @@ public class ImagePickerFragment extends BaseFragment implements BaseFileItemCli
 
 
     private void previewPhotoBack(String path) {
-        // TODO: 2017/11/13 发布时注释 null 判断
-        if (null == mPhotoPreviewListener)
-            throw new IllegalArgumentException(" PhotoPreviewListener 不能为 null");
-        if (null != mPhotoPreviewListener) {
-            mPhotoPreviewListener.onSelectImagePreview(path);
-        }
+        mPhotoPreviewListener.onSelectImagePreview(path);
     }
 
 

@@ -1,6 +1,7 @@
 package com.jxyedu.lib.filepicker.fragment;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
@@ -8,7 +9,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +42,11 @@ public class ResultImagePreviewFragment extends BaseFragment implements View.OnC
     protected SystemBarTintManager tintManager;
     protected TextView mTitleCount;
     protected ArrayList<String> paths;
+    protected PhotoPreviewAndResultFragmentListener mResultListener;
+
+    public interface PhotoPreviewAndResultFragmentListener{
+        void onPhotoPreviewAndResult();
+    }
 
     public static ResultImagePreviewFragment newInstance(String path) {
         Bundle args = new Bundle();
@@ -75,6 +80,33 @@ public class ResultImagePreviewFragment extends BaseFragment implements View.OnC
 
     public ResultImagePreviewFragment() {
         // Required empty public constructor
+    }
+
+
+    /**
+     * 初始化 mListener 回调
+     *
+     * @param context
+     */
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mResultListener = (PhotoPreviewAndResultFragmentListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(getActivity().getClass().getName()
+                    + " must implements interface PhotoPreviewAndResultFragmentListener");
+        }
+
+    }
+
+    /**
+     * 注销回调
+     */
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mResultListener = null;
     }
 
 
@@ -186,10 +218,7 @@ public class ResultImagePreviewFragment extends BaseFragment implements View.OnC
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //移除当前图片刷新界面
-                Log.d("del", "path size:" + paths.size() + "path:" + paths.get(mCurrentPosition) + "| mCurrentPosition:" + mCurrentPosition);
                 FPickerManager.INSTANCE.remove(paths.get(mCurrentPosition), FPickerConstants.FILE_TYPE_MEDIA);
-                //paths.remove(mCurrentPosition);
-                Log.d("del", "path del size:" + paths.size());
                 if (paths.size() > 0) {
                     mAdapter.setData(paths);
                     mAdapter.notifyDataSetChanged();
@@ -202,8 +231,13 @@ public class ResultImagePreviewFragment extends BaseFragment implements View.OnC
         builder.show();
     }
 
+    /**
+     * 通知
+     */
     private void popBackStack() {
-        getActivity().getSupportFragmentManager().popBackStack();
+        mResultListener.onPhotoPreviewAndResult();
+        //通知前台返回操作后的数据
+        //getActivity().getSupportFragmentManager().popBackStack();
     }
 
 

@@ -17,7 +17,8 @@ import java.util.ArrayList;
 
 public class FPickerActivity extends AppCompatActivity implements
         FilePickerFragmentListener,
-        ImagePickerFragment.PhotoPreviewFragmentListener {
+        ImagePickerFragment.PhotoPreviewFragmentListener,
+        ResultImagePreviewFragment.PhotoPreviewAndResultFragmentListener{
 
     public static final String TAG = FPickerActivity.class.getSimpleName();
 
@@ -25,6 +26,13 @@ public class FPickerActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_picker);
+        Log.d(TAG, " fp activity onCreate: ------>");
+
+
+        ArrayList<String> lists = (ArrayList<String>) getIntent().getSerializableExtra(FPickerConstants.PHOTO_PREVIEW_PATH_KEY);
+        if (null != lists && lists.size()>0) {
+            Log.d(TAG, "onCreate: list size:"+lists.size());
+        }
         //fragment 
         openSpecificFragment(savedInstanceState);
     }
@@ -58,26 +66,14 @@ public class FPickerActivity extends AppCompatActivity implements
     }
 
 
-    /**
-     * 点击
-     * @param v
-     */
-//    @Override
-//    public void onClick(View v) {
-//        int id = v.getId();
-//        if (id == R.id.btn_back) {
-//            //点击返回按钮
-//            finish();
-//        }
-//    }
-
 
     /**
      * 返回选择文件数据结果给需要的页面
      *
-     * @param paths
      */
-    private void returnData(ArrayList<String> paths) {
+    private void returnData() {
+        ArrayList<String> paths = new ArrayList<>();
+        paths = FPickerManager.INSTANCE.getSelectedPhotos();
         Log.d(TAG, "path size:" + paths.size() + " 返回！");
         Intent intent = new Intent();
         intent.putStringArrayListExtra(FPickerConstants.KEY_SELECTED_MEDIA, paths);
@@ -91,9 +87,7 @@ public class FPickerActivity extends AppCompatActivity implements
      */
     @Override
     public void onItemSelectedCompletedAndBack() {
-        ArrayList<String> paths = new ArrayList<>();
-        paths = FPickerManager.INSTANCE.getSelectedPhotos();
-        returnData(paths);
+        returnData();
     }
 
     @Override
@@ -108,6 +102,18 @@ public class FPickerActivity extends AppCompatActivity implements
         Log.d(TAG, "onSelectImagePreview path -> " + path);
         ResultImagePreviewFragment resultImagePreviewFragment = ResultImagePreviewFragment.newInstance(path);
         FragmentUtil.replaceFragment(this, R.id.container, resultImagePreviewFragment);
+    }
+
+    @Override
+    public void onBackExit() {
+        finish();
+    }
+
+
+    @Override
+    public void onPhotoPreviewAndResult() {
+        Log.d(TAG, "onPhotoPreviewAndResult: ----");
+        returnData();
     }
 
 

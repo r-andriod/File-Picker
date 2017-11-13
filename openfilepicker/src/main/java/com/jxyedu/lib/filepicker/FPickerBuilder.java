@@ -7,13 +7,18 @@ import android.support.v4.app.Fragment;
 
 import com.jxyedu.lib.filepicker.activity.FPickerActivity;
 
+import java.util.ArrayList;
+
 /**
  * FPickerBuilder
  * Created by renwoxing on 2017/11/9.
  */
 public class FPickerBuilder {
 
-    private final Bundle mPickerOptionsBundle;
+    private final String TAG = getClass().getSimpleName();
+
+    private Bundle mPickerOptionsBundle;
+
 
     public FPickerBuilder() {
         mPickerOptionsBundle = new Bundle();
@@ -28,6 +33,10 @@ public class FPickerBuilder {
         return this;
     }
 
+    public FPickerBuilder setPhotoOptions(String key, ArrayList<String> val) {
+        this.mPickerOptionsBundle.putStringArrayList(key,val);
+        return this;
+    }
 
     public void pickPhoto(Activity context) {
         mPickerOptionsBundle.putInt(FPickerConstants.EXTRA_PICKER_TYPE, FPickerConstants.MEDIA_PICKER);
@@ -46,8 +55,9 @@ public class FPickerBuilder {
         Intent intent = new Intent(context, FPickerActivity.class);
         intent.putExtras(mPickerOptionsBundle);
 
-        if (pickerType == FPickerConstants.MEDIA_PICKER)
+        if (pickerType == FPickerConstants.MEDIA_PICKER) {
             context.startActivityForResult(intent, FPickerConstants.REQUEST_CODE_PHOTO);
+        }
         else
             context.startActivityForResult(intent, FPickerConstants.REQUEST_CODE_DOC);
     }

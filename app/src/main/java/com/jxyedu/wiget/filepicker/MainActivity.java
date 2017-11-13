@@ -23,9 +23,12 @@ import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
+    private final String TAG = getClass().getSimpleName();
     private Context mContext;
     // 相机权限、多个权限
     private final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
+
+    ArrayList<String> photoPaths = null;
 
     private final String[] PERMISSIONS = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -57,25 +60,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: " + resultCode + " requestCode:" + requestCode);
         if (resultCode == Activity.RESULT_OK && data != null) {
-            ArrayList<String> photoPaths = new ArrayList<>();
+            photoPaths = new ArrayList<>();
             photoPaths.addAll(data.getStringArrayListExtra(FPickerConstants.KEY_SELECTED_MEDIA));
-            Log.d("--"," 接收到的 data size:" + photoPaths.size() );
+            Log.d("--", " 接收到的 data size:" + photoPaths.size());
         }
-
-
-//        switch (requestCode){
-//            Log.d("--"," data:" + )
-//        }
     }
 
     /**
      * 拍照
      */
     private void toCamera() {
+
         FPickerBuilder.getInstance()
                 .setMaxCount(5)
-                .pickPhoto(MainActivity.this);
+                .setPhotoOptions(FPickerConstants.PHOTO_PREVIEW_PATH_KEY,photoPaths)
+                .pickPhoto(this);
+
+
     }
 
 
