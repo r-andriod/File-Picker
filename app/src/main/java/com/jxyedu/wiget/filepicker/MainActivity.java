@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.jxyedu.lib.filepicker.FPickerBuilder;
 import com.jxyedu.lib.filepicker.FPickerConstants;
 import com.jxyedu.lib.filepicker.utils.PermissionUtils;
+import com.jxyedu.lib.filepicker.view.MultiImageViewLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     private final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
 
     ArrayList<String> photoPaths = null;
+    private MultiImageViewLayout mMultiImageViewLayout;
+
 
     private final String[] PERMISSIONS = new String[]{
             Manifest.permission.READ_EXTERNAL_STORAGE,
@@ -52,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 //toCamera();
             }
         });
+        mMultiImageViewLayout = findViewById(R.id.multi_image_layout);
 
     }
 
@@ -64,6 +68,18 @@ public class MainActivity extends AppCompatActivity {
             photoPaths = new ArrayList<>();
             photoPaths.addAll(data.getStringArrayListExtra(FPickerConstants.KEY_SELECTED_MEDIA));
             Log.d("--", " 接收到的 data size:" + photoPaths.size());
+            mMultiImageViewLayout.setList(photoPaths);
+            mMultiImageViewLayout.setOnItemClickListener(new MultiImageViewLayout.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int pressImagePosition, float pressX, float pressY) {
+                    Log.d(TAG, "mMultiImageViewLayout onItemClick: " + pressImagePosition);
+                }
+
+                @Override
+                public void onItemLongClick(View view, int pressImagePosition, float pressX, float pressY) {
+
+                }
+            });
         }
 
     }
@@ -75,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         FPickerBuilder.getInstance()
                 .setMaxCount(5)
-                .setPhotoOptions(FPickerConstants.EXTRA_PHOTO_PREVIEW_PATH,photoPaths)
+                .setPhotoOptions(FPickerConstants.EXTRA_PHOTO_PREVIEW_PATH, photoPaths)
                 .pickPhoto(this);
 
 
